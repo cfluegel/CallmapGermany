@@ -61,7 +61,14 @@ Die runtergeladene Rufzeichenliste wandeln wir wie folgt in eine Text-Datei um:
 ```
 ps2ascii Rufzeichenliste_AFU.pdf > calls.txt
 ``` 
-Da die PDF-Datei relativ groß ist, dauert es einen Moment (zwischen 5 Minuten und 15 Minuten auf einem schnellen Computer). Die entstandene Text-Datei ist ca. 4MB groß. Im Prinzip ist es egal, welches Tool man dazu benutzt; mein Skript im nächsten Schritt berücksichtigt aber gewisse Eigenarten von ps2ascii, wird daher also ohne Modifikationen wahrscheinlich nur dafür richtig funktionieren.
+
+Alternativ geht auch
+
+```
+pdftotext Rufzeichenliste_AFU.pdf calls.txt
+```
+
+Da die PDF-Datei relativ groß ist, dauert es einen Moment. Die entstandene Text-Datei ist ca. 4MB groß. Im Prinzip ist es egal, welches Tool man dazu benutzt; mein Skript im nächsten Schritt berücksichtigt aber gewisse Eigenarten von ps2ascii oder pdftotext, wird daher also ohne Modifikationen wahrscheinlich nur dafür richtig funktionieren.
 
 ## Erstellung der Datenbank
 
