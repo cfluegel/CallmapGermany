@@ -14,7 +14,9 @@ Ich hatte das ganze Projekt an einem Abend zwecks zeitvertreib realisiert, weil 
 VK2UTL/DK1UT
 
 # News
+* 26.05.2017: Viele kleine Verbesserungen
 * 24.05.2017: Karte entfernt, Anleitung wesentlich erweitert
+* 23.05.2017: Projekt online gestellt
 
 # Vorgehen
 
