@@ -23,7 +23,7 @@ VK2UTL/DK1UT
 Die folgende Anleitung ist an Linux und MacOS Benutzer gerichtet. Unter Windows funktioniert natürlich im Prinzip auch alles, da wir aber ein vernünftiges Terminal benötigen und ich (aus genau diesem Grund) kein Windows benutze, will ich das jetzt hier nicht näher erörtern. Ich denke, es ist wirklich kein großer Aufwand, alles analog unter Windows umzusetzen.
 
 ## Hinweis vorab
-Die Interpretation der erstellten Karte bleibt natürlich jedem selbst überlassen. Über die Aktivität sagt die Karte natürlich nichts aus, nur an welchen Standorten Lizenzen existieren (und auch das nur nach BNetzA, und dazu übertrieben, da es teilweise für einen Call auch zwei Adressen angegeben sind). Mit dem Datenbank-Rückgrat kann man beliebige Filtrierungen durchführen und so vielleicht bessere Ergebnisse erhalten.
+Die Interpretation der erstellten Karte bleibt natürlich jedem selbst überlassen, die Daten sind offensichtlich nur so gut wie die der BNetzA. Über die Aktivität sagt die Karte natürlich nichts aus. 
 
 ## Quellen
 Die Quellen meiner Skripte gibt es auf der [Github Website](https://github.com/thielul/CallmapGermany) des Projekts (oder [hier](https://github.com/thielul/CallmapGermany.git) direkt zum Zip-Archiv). Dieses Archiv lädt man komplett runter (es enthält neben den Python-Skripten eine leere SQLite Datenbank names  ```calls.db```, **die benötigt wird**).
@@ -104,7 +104,9 @@ python makegeo.py
 
 werden die Adressen in der Datenbank einzeln durchgegangen, ein Geocoding abgefragt und die Koordinaten in die Spalten Lng/Lat der Tabelle ```Locations``` eingefügt. Gibt es vom Server keine Fehlermeldung (Adresse nicht gefunden oder ähnlich), wird in der Spalte Geocode eine 1 gesetzt, ansonsten eine 0. Man kann das Skript jederzeit unterbrechen und erneut starten; alle Einträge mit erfolgreichem Geocoding (Geocode=1) werden dabei übersprungen.
 
-Da das Geocoding aus einzelnen Abfragen besteht, dauert dies sehr lange (1 Sekunde je Abfrage). Erschwerend kommt hinzu, dass Google ein Limit von 2,500 Abfragen pro Tag hat. Die 70,000 Adressen zu geocoden, dauert also eine Weile, wenn man nicht mehrere Computer mit verschiedenen IPs benutzen kann. Eine Alternative wäre hier das Geocoding mittels OpenStreetMap. Dazu kann man in ```makegeo.py``` einfach *google* durch *osm* ersetzen (oder durch jeden anderen unterstützten Dienst). Natürlich kann man sich bei der ```SELECT``` Abfrage in ```makegeo.py``` auch auf einen festen Ort beschränken, was die Anzahl reduziert.
+Da das Geocoding aus einzelnen Abfragen besteht, dauert dies sehr lange (1 Sekunde je Abfrage). Erschwerend kommt hinzu, dass Google ein Limit von 2,500 Abfragen pro Tag hat. Die 70,000 Adressen zu geocoden, dauert also eine Weile, wenn man nicht mehrere Computer mit verschiedenen IPs benutzen kann.  
+ 
+**Hinweis:** Man kann natürlich immer auch Zwischen-Ergebnisse nach den Schritten unten visualisieren, d.h. man muss nicht ewig warten, um eine erste Karte zu sehen. Weiterhin kann man sich bei der ```SELECT``` Abfrage in ```makegeo.py``` auch auf einen festen Ort beschränken, was die Anzahl reduziert. Eine andere Möglichkeit wäre noch das Geocoding mittels OpenStreetMap. Dazu kann man in ```makegeo.py``` einfach *google* durch *osm* ersetzen (oder durch jeden anderen unterstützten Dienst). Schließlich könnten sich mehrere OMs zusammenschließen und gewisse Blöcke geocoden und die Ergebnisse mergen. Das SQL-Rückgrat macht das alles sehr leicht.
 
 ### Zu erledigen
   
