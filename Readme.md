@@ -14,13 +14,16 @@ Ich hatte das ganze Projekt an einem Abend zwecks zeitvertreib realisiert, weil 
 VK2UTL/DK1UT
 
 # News
-* 26.05.2017: Viele kleine Verbesserungen
+* 26.05.2017: Viele kleine Verbesserungen (pdftotext sollte jetzt auch unterstütz werden; Unicode-Probleme sollten behoben sein, hoffentlich).
 * 24.05.2017: Karte entfernt, Anleitung wesentlich erweitert
 * 23.05.2017: Projekt online gestellt
 
 # Vorgehen
 
 Die folgende Anleitung ist an Linux und MacOS Benutzer gerichtet. Unter Windows funktioniert natürlich im Prinzip auch alles, da wir aber ein vernünftiges Terminal benötigen und ich (aus genau diesem Grund) kein Windows benutze, will ich das jetzt hier nicht näher erörtern. Ich denke, es ist wirklich kein großer Aufwand, alles analog unter Windows umzusetzen.
+
+## Hinweis vorab
+Die Interpretation der erstellten Karte bleibt natürlich jedem selbst überlassen. Über die Aktivität sagt die Karte natürlich nichts aus, nur an welchen Standorten Lizenzen existieren (und auch das nur nach BNetzA, und dazu übertrieben, da es teilweise für einen Call auch zwei Adressen angegeben sind). Mit dem Datenbank-Rückgrat kann man beliebige Filtrierungen durchführen und so vielleicht bessere Ergebnisse erhalten.
 
 ## Quellen
 Die Quellen meiner Skripte gibt es auf der [Github Website](https://github.com/thielul/CallmapGermany) des Projekts (oder [hier](https://github.com/thielul/CallmapGermany.git) direkt zum Zip-Archiv). Dieses Archiv lädt man komplett runter (es enthält neben den Python-Skripten eine leere SQLite Datenbank names  ```calls.db```, **die benötigt wird**).
@@ -47,7 +50,7 @@ python get-pip.py
 
 installieren.
 
-* Ein Tool zum Konvertieren von PDF-Datein in Text-Datein. Ich habe dazu ps2ascii verwendet. Ich bin mir nicht mehr ganz sicher, glaube aber, es ist Teil des [GhostScript Bundles](https://www.ghostscript.com/download/gsdnld.html). Für MacOS gibt es [hier](http://pages.uoregon.edu/koch/) ein fertiges Paket oder man installiert mittels [Homebrew](https://brew.sh/index_de.html) und ```brew install ghostscript```. Für Linux wird sich das auch mittels eines Paketmanagers installieren lassen.
+* Ein Tool zum Konvertieren von PDF-Datein in Text-Datein. Ich habe dazu ps2ascii verwendet. Ich bin mir nicht mehr ganz sicher, glaube aber, es ist Teil des [GhostScript Bundles](https://www.ghostscript.com/download/gsdnld.html). Für MacOS gibt es [hier](http://pages.uoregon.edu/koch/) ein fertiges Paket oder man installiert mittels [Homebrew](https://brew.sh/index_de.html) und ```brew install ghostscript```. Für Linux wird sich das auch mittels eines Paketmanagers installieren lassen. Eine andere (ich glaube sogar bessere) Möglichkeit ist pdftotext.
 
 ## Rufzeichenliste
 Bei der [öffentlichen PDF-Datei der Bundesnetzagentur](https://www.bundesnetzagentur.de/SharedDocs/Downloads/DE/Sachgebiete/Telekommunikation/Unternehmen_Institutionen/Frequenzen/Amateurfunk/Rufzeichenliste/Rufzeichenliste_AFU.html) handelt es sich um eine ca. 9MB große PDF-Datei. Diese benötigen wir.
@@ -70,16 +73,10 @@ python makedb.py
 
 erstellen. Dieses Skript geht die Text-Datei ```calls.txt``` zeilenweise durch, extrahiert die relevanten Daten, und speichert sie in die SQLite-Datenbank ```calls.db```. Dieser Teil ist natürlich am schwierigsten zu Programmieren. Ich verwende zum Parsen reguläre Ausdrücke. Es gibt leider ein paar Formatierfehler in der Rufzeichenliste selbst, die ich im Skript auch berücksichtigen muss. 
 
-Die Datenbank selbst kann man sich z.B. mit dem netten Tool [SQLite Browser](http://sqlitebrowser.org) anschauen (im Tab *Browse Data*). Die Spalten der Datenbank sind:
+Die Datenbank selbst kann man sich z.B. mit dem netten Tool [SQLite Browser](http://sqlitebrowser.org) anschauen (im Tab *Browse Data*). Es besteht aus den beiden Tabellen ```Calls``` und ```Locations```, und einem View ```CallsComplete```. Die Tabelle ```Locations``` ist eine Liste mit Adressen, versehen mit einer eindeutigen Id, auf die in der Tabelle ```Calls``` referenziert wird. Diese Separation macht alles etwas effizienter. Das nette an SQL ist, dass man ganz leicht sehr komplexe Datenabfragen machen kann, z.B.
 
 ```
-Id, Callsign, Class, Category, Name, Street, Zip, City, Lng,  Lat, Geocode, Visible
-```
-
-Die Spalte Id ist einfach nur eine fortlaufende Id, die restlichen Spalten sollten zum Großteil selbsterklärend sein. Hier könnte man natürlich noch weitere Spalten mit Daten hinzufügen. Das nette an SQL ist, dass man ganz leicht sehr komplexe Datenabfragen machen kann, z.B.
-
-```
-SELECT Count(*) FROM Callsigns WHERE City="Berlin"
+SELECT Count(*) FROM Calls WHERE City="Berlin"
 ```
 
 ### Zu erledigen
@@ -105,7 +102,7 @@ Mittels
 python makegeo.py
 ```
 
-werden die Adressen in der Datenbank einzeln durchgegangen, ein Geocoding abgefragt und die Koordinaten in die Spalten Lng/Lat eingefügt. Gibt es vom Server keine Fehlermeldung (Adresse nicht gefunden oder ähnlich), wird in der Spalte Geocode eine 1 gesetzt, ansonsten eine 0. Man kann das Skript jederzeit unterbrechen und erneut starten; alle Einträge mit erfolgreichem Geocoding (Geocode=1) werden dabei übersprungen.
+werden die Adressen in der Datenbank einzeln durchgegangen, ein Geocoding abgefragt und die Koordinaten in die Spalten Lng/Lat der Tabelle ```Locations``` eingefügt. Gibt es vom Server keine Fehlermeldung (Adresse nicht gefunden oder ähnlich), wird in der Spalte Geocode eine 1 gesetzt, ansonsten eine 0. Man kann das Skript jederzeit unterbrechen und erneut starten; alle Einträge mit erfolgreichem Geocoding (Geocode=1) werden dabei übersprungen.
 
 Da das Geocoding aus einzelnen Abfragen besteht, dauert dies sehr lange (1 Sekunde je Abfrage). Erschwerend kommt hinzu, dass Google ein Limit von 2,500 Abfragen pro Tag hat. Die 70,000 Adressen zu geocoden, dauert also eine Weile, wenn man nicht mehrere Computer mit verschiedenen IPs benutzen kann. Eine Alternative wäre hier das Geocoding mittels OpenStreetMap. Dazu kann man in ```makegeo.py``` einfach *google* durch *osm* ersetzen (oder durch jeden anderen unterstützten Dienst). Natürlich kann man sich bei der ```SELECT``` Abfrage in ```makegeo.py``` auch auf einen festen Ort beschränken, was die Anzahl reduziert.
 
@@ -126,7 +123,7 @@ python makecsv.py
 erstellt man eine CSV-Datei aus der Datenbank. Dabei gehe ich so vor, dass ich mittels der SQL-Abfrage
 
 ```
-SELECT Lng, Lat FROM Callsigns WHERE Geocode=1 GROUP BY Lat, Lng
+SELECT Lng, Lat FROM Locations WHERE Geocode=1
 ```
 
 zunächst sämtliche Standorte sammle. In einem zweiten Schritt werden für jeden Standort alle Stationen an diesem Ort gesucht. Die Daten dazu werden in der Spalte *Label* der CSV-Datei eingefügt. In der Spalte *Marker* ist eine Anweisung für die Art der Markierung an diesem Ort.
