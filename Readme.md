@@ -20,7 +20,7 @@ VK2UTL/DK1UT
 
 # Vorgehen
 
-Die folgende Anleitung sollte eigentlich unter allen Betriebssystemen funktionieren (ich habe MacOS und Windows getestet). In jedem Fall benötigt man ein Terminal (Eingabeaufforderung).
+Die folgende Anleitung sollte eigentlich unter allen Betriebssystemen funktionieren (ich habe MacOS und Windows getestet). In jedem Fall wird alles, was ich unten schildere, in einem **Terminal** (Bash/Eingabeaufforderung) ausgeführt.
 
 
 ## Skripte
