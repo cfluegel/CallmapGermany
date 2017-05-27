@@ -20,12 +20,10 @@ VK2UTL/DK1UT
 
 # Vorgehen
 
-Die folgende Anleitung ist an Linux und MacOS Benutzer gerichtet. Unter Windows funktioniert natürlich im Prinzip auch alles, da wir aber ein vernünftiges Terminal benötigen und ich (aus genau diesem Grund) kein Windows benutze, will ich das jetzt hier nicht näher erörtern. Ich denke, es ist wirklich kein großer Aufwand, alles analog unter Windows umzusetzen.
+Die folgende Anleitung sollte eigentlich unter allen Betriebssystemen funktionieren (ich habe MacOS und Windows getestet). In jedem Fall benötigt man ein Terminal (Eingabeaufforderung).
 
-## Hinweis vorab
-Die Interpretation der erstellten Karte bleibt natürlich jedem selbst überlassen, die Daten sind offensichtlich nur so gut wie die der BNetzA. Über die Aktivität sagt die Karte natürlich nichts aus. 
 
-## Quellen
+## Skripte
 Die Quellen meiner Skripte gibt es auf der [Github Website](https://github.com/thielul/CallmapGermany) des Projekts (oder [hier](https://github.com/thielul/CallmapGermany.git) direkt zum Zip-Archiv). Dieses Archiv lädt man komplett runter (es enthält neben den Python-Skripten eine leere SQLite Datenbank names  ```calls.db```, **die benötigt wird**).
 
 ## Externe Tools
@@ -48,9 +46,9 @@ Falls pip selbst nicht vorhanden, kann man dies mittels
 python get-pip.py
 ```
 
-installieren.
+installieren (unter Windows müsste man im Internet mal recherchieren, wie man pip richtig installiert; bei mir geht es, habe aber vergessen, wie es ging; man benötigt für die Installation in jedem Fall auch eine Eingabeaufforderung mit Admin-Rechten, das man mittels Rechtsklick auf *Eingabeaufforderung* und *Als Administrator öffnen* bekommt).
 
-* Ein Tool zum Konvertieren von PDF-Datein in Text-Datein. Ich habe dazu ps2ascii verwendet. Ich bin mir nicht mehr ganz sicher, glaube aber, es ist Teil des [GhostScript Bundles](https://www.ghostscript.com/download/gsdnld.html). Für MacOS gibt es [hier](http://pages.uoregon.edu/koch/) ein fertiges Paket oder man installiert mittels [Homebrew](https://brew.sh/index_de.html) und ```brew install ghostscript```. Für Linux wird sich das auch mittels eines Paketmanagers installieren lassen. Eine andere (ich glaube sogar bessere) Möglichkeit ist pdftotext.
+* Ein Tool zum Konvertieren von PDF-Datein in Text-Datein. Ich habe dazu [pdftotext](https://en.wikipedia.org/wiki/Pdftotext) verwendet, es ist Teil des Poppler-Bundles. Unter MacOS kann man das mittels [Homebrew](https://brew.sh) und dann ```brew install poppler``` installieren. Für Linux sollte sich das mit dem entsprechenden Paket-Manager installieren lassen. Für Windows gibt es das [hier](http://blog.alivate.com.au/poppler-windows/).
 
 ## Rufzeichenliste
 Bei der [öffentlichen PDF-Datei der Bundesnetzagentur](https://www.bundesnetzagentur.de/SharedDocs/Downloads/DE/Sachgebiete/Telekommunikation/Unternehmen_Institutionen/Frequenzen/Amateurfunk/Rufzeichenliste/Rufzeichenliste_AFU.html) handelt es sich um eine ca. 9MB große PDF-Datei. Diese benötigen wir.
@@ -59,16 +57,10 @@ Bei der [öffentlichen PDF-Datei der Bundesnetzagentur](https://www.bundesnetzag
 Die runtergeladene Rufzeichenliste wandeln wir wie folgt in eine Text-Datei um:
 
 ```
-ps2ascii Rufzeichenliste_AFU.pdf > calls.txt
+pdftotext -enc UTF-8 Rufzeichenliste_AFU.pdf calls.txt
 ``` 
 
-Alternativ geht auch
-
-```
-pdftotext Rufzeichenliste_AFU.pdf calls.txt
-```
-
-Da die PDF-Datei relativ groß ist, dauert es einen Moment. Die entstandene Text-Datei ist ca. 4MB groß. Im Prinzip ist es egal, welches Tool man dazu benutzt; mein Skript im nächsten Schritt berücksichtigt aber gewisse Eigenarten von ps2ascii oder pdftotext, wird daher also ohne Modifikationen wahrscheinlich nur dafür richtig funktionieren.
+Unter Windows gibt man das ähnlich in die Eingeabeaufforderung ein (man benutzt ```pdftotext.exe``` aus dem Poppler-Archiv). Da die PDF-Datei relativ groß ist, kann dies einen Moment dauern. Die entstandene Text-Datei ist ca. 4MB groß. Im Prinzip ist es egal, welches Tool man dazu benutzt; mein Skript im nächsten Schritt berücksichtigt aber gewisse Eigenarten von ps2ascii oder pdftotext, wird daher also ohne Modifikationen wahrscheinlich nur dafür richtig funktionieren.
 
 ## Erstellung der Datenbank
 
