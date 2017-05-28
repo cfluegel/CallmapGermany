@@ -75,7 +75,7 @@ erstellen. Dieses Skript geht die Text-Datei ```calls.txt``` zeilenweise durch, 
 Die Datenbank selbst kann man sich z.B. mit dem netten Tool [SQLite Browser](http://sqlitebrowser.org) anschauen (im Tab *Browse Data*). Es besteht aus den beiden Tabellen ```Calls``` und ```Locations```, und einem View ```CallsComplete```. Die Tabelle ```Locations``` ist eine Liste mit Adressen, versehen mit einer eindeutigen Id, auf die in der Tabelle ```Calls``` referenziert wird. Diese Separation macht alles etwas effizienter. Das nette an SQL ist, dass man ganz leicht sehr komplexe Datenabfragen machen kann, z.B.
 
 ```
-SELECT Count(*) FROM Calls WHERE City="Berlin"
+SELECT Count(*) FROM CallsComplete WHERE City="Berlin"
 ```
 
 ### Zu erledigen
